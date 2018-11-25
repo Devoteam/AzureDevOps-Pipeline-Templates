@@ -1,0 +1,28 @@
+parameters:
+  gitVersionVersion: ''
+  nugetVersion: ''
+
+steps:
+- task: NuGetToolInstaller@0
+  displayName: NuGet use ${{ parameters.nugetVersion }}
+  inputs:
+    versionSpec: ${{ parameters.nugetVersion }}
+
+- task: NuGetCommand@2
+  displayName: NuGet Install GitVersion
+  inputs:
+    command: custom
+    arguments: install GitVersion.CommandLine -Version ${{ parameters.gitVersionVersion }} -OutputDirectory $(Build.BinariesDirectory)
+
+- powershell: $(Build.BinariesDirectory)\GitVersion.CommandLine.${{ parameters.gitVersionVersion }}\tools\GitVersion.exe $(Build.SourcesDirectory) /output buildserver /nofetch
+  displayName: GitVersion Execute
+
+- powershell:   |
+    $CI_Version = "$env:GITVERSION_LEGACYSEMVER"
+    Write-Host ("##vso[task.setvariable variable=CI_Version;]$CI_Version")
+  displayName: "Build Versionize"
+
+- powershell:   |
+    Write-Host "Build ID: $(Build.BuildId)"
+    Write-Host "Build BuildNumber: $(Build.BuildNumber)"
+  displayName: "Build Versions"
