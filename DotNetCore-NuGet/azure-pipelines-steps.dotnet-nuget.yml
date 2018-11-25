@@ -1,0 +1,74 @@
+# Steps of building .NET Core / .NET Standard as NuGet output and raw output
+parameters:
+  gitVersionVersion: ''
+  nugetVersion: ''
+  buildConfiguration: ''
+  packagesToPack: ''
+
+steps:
+## Build Versioning
+
+- task: NuGetToolInstaller@0
+  displayName: NuGet use ${{ parameters.nugetVersion }}
+  inputs:
+    versionSpec: ${{ parameters.nugetVersion }}
+
+- task: NuGetCommand@2
+  displayName: NuGet Install GitVersion
+  inputs:
+    command: custom
+    arguments: install GitVersion.CommandLine -Version ${{ parameters.gitVersionVersion }} -OutputDirectory $(Build.BinariesDirectory)
+
+- powershell: $(Build.BinariesDirectory)\GitVersion.CommandLine.${{ parameters.gitVersionVersion }}\tools\GitVersion.exe $(Build.SourcesDirectory) /output buildserver /nofetch
+  displayName: GitVersion Execute
+
+- powershell:   |
+    $CI_Version = "$env:GITVERSION_LEGACYSEMVER"
+    Write-Host ("##vso[task.setvariable variable=CI_Version;]$CI_Version")
+  displayName: "Build Versionize"
+
+- powershell:   |
+    Write-Host "Build ID: $(Build.BuildId)"
+    Write-Host "Build BuildNumber: $(Build.BuildNumber)"
+  displayName: "Build Versions"
+
+## Build Versioning
+
+- task: NuGetCommand@2
+  displayName: "NuGet Restore"
+  inputs:
+    restoreSolution: '**/*.csproj'
+    feedsToUse: config
+    nugetConfigPath: NuGet.config
+
+- task: DotNetCoreCLI@2
+  displayName: ".NET build"
+  inputs:
+    projects: '**/*.csproj'
+    arguments: --configuration ${{ parameters.buildConfiguration }} --no-restore
+
+- powershell:   |
+     dir test | % { dotnet test $_.FullName --logger "trx;logfilename=TestResults.xml" }
+  displayName: ".NET test"
+
+- task: PublishTestResults@2
+  displayName: "Publish test results"
+  inputs:
+    testResultsFormat: 'VSTest'
+    testResultsFiles: 'test/**/TestResults.xml' 
+
+- task: DotNetCoreCLI@2
+  displayName: ".NET pack"
+  inputs:
+    command: pack
+    packagesToPack: ${{ parameters.packagesToPack }}
+    versioningScheme: byEnvVar
+    versionEnvVar: CI_Version
+    arguments: --no-build
+
+- task: PublishBuildArtifacts@1
+  displayName: "Publish artifacts"
+  inputs:
+    PathtoPublish: $(Build.ArtifactStagingDirectory)
+    ArtifactName: app
+    ArtifactType: Container
