@@ -46,14 +46,11 @@ steps:
     projects: '**/*.csproj'
     arguments: --configuration ${{ parameters.buildConfiguration }} --no-restore
 
-- powershell:   |
-     dir test | % { dotnet test $_.FullName --logger "trx;logfilename=TestResults.xml" }
+- task: DotNetCoreCLI@2
   displayName: ".NET test"
-
-- task: PublishTestResults@2
   inputs:
-    testResultsFormat: 'VSTest'
-    testResultsFiles: 'test/**/TestResults.xml' 
+    command: test
+    projects: 'test/**/*.csproj'
 
 - task: DotNetCoreCLI@2
   displayName: ".NET publish package"
