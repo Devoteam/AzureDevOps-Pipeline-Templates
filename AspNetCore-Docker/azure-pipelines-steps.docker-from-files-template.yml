@@ -38,18 +38,18 @@ steps:
     dockerFile: ${{ parameters.dockerFile }}
     imageName: ${{ parameters.dockerRepositoryName }}/${{ parameters.dockerUserName }}/${{ parameters.dockerImageName }}:$(Build.BuildId)
 
-- powershell: New-Item -Path "$(Build.ArtifactStagingDirectory)/docker" -ItemType Directory -Force | out-null
+- powershell: New-Item -Path "$(Build.ArtifactStagingDirectory)/dockeroutput/docker" -ItemType Directory -Force | out-null
   displayName: "Create Docker Image Save Folder"
 
 - task: Docker@0
   displayName: "Docker Image Save locally"
   inputs:
     action: 'Run a Docker command'
-    customCommand: save --output $(Build.ArtifactStagingDirectory)/docker/${{ parameters.dockerRepositoryName }}-${{ parameters.dockerUserName }}-${{ parameters.dockerImageName }}-$(Build.BuildId).tar.gz ${{ parameters.dockerRepositoryName }}/${{ parameters.dockerUserName }}/${{ parameters.dockerImageName }}:$(Build.BuildId)
+    customCommand: save --output $(Build.ArtifactStagingDirectory)/dockeroutput/docker/${{ parameters.dockerRepositoryName }}-${{ parameters.dockerUserName }}-${{ parameters.dockerImageName }}-$(Build.BuildId).tar.gz ${{ parameters.dockerRepositoryName }}/${{ parameters.dockerUserName }}/${{ parameters.dockerImageName }}:$(Build.BuildId)
 
 - task: PublishBuildArtifacts@1
   displayName: "Publish Docker Image artifacts"
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/docker'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/dockeroutput'
     ArtifactName: drop
     publishLocation: Container
