@@ -1,7 +1,7 @@
 # AzureDevOps-YamlBuildSamples
 
 | Target | Artifact Type | File |
-|-|-|-|-|
+|-|-|-|
 | ASP.NET Core | File and Deployment Package | [Link](AspNetCore/readme.md) |
 | ASP.NET Core with Docker| Files, Deployment Package and Docker Image | [Link](AspNetCore-Docker/readme.md) |
 | GitVersion | Calculates Version of Build | [Link](Build-GitVersion/readme.md) |
