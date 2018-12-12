@@ -20,9 +20,6 @@ steps:
 - powershell:   |
     $CI_Version = "$env:GITVERSION_LEGACYSEMVER"
     Write-Host ("##vso[task.setvariable variable=CI_Version;]$CI_Version")
-  displayName: "Build Versionize"
-
-- powershell:   |
     Write-Host "Build ID: $(Build.BuildId)"
     Write-Host "Build BuildNumber: $(Build.BuildNumber)"
   displayName: "Build Versions"

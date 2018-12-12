@@ -1,0 +1,54 @@
+resources:
+- repo: self
+
+trigger:
+  batch: false # batch changes if true, start a new build for every push if false
+  branches:
+    include:
+    - master
+
+variables:
+  Docker.UserName: mydockerusername # TODO: Replace with your Docker Username
+  Docker.ImageName: mydockerimagename # TODO: Replace with your Docker ImageName
+  Docker.RepositoryName: mydockerepositoryname # TODO: Replace with your Docker RepositoryName
+
+jobs:
+- job: WebApp
+  pool:
+    vmImage: vs2017-win2016
+  steps:
+  - template: azure-pipelines-steps.aspnetcore.yml  # see AspNetCore/azure-pipelines-steps.aspnetcore.yml
+    parameters:
+     gitVersionVersion: '4.0.0-beta0012' # release version is not available on NuGet yet
+     nugetVersion: '4.9.1'
+     buildConfiguration: 'Release'
+     deployPackage: false
+     deployFiles: true # files only here
+
+- job: DockerOnLinux
+  dependsOn: WebApp
+  pool:
+    vmImage: ubuntu-16.04
+  steps:
+  - template: azure-pipelines-steps.docker-from-files-template.yml 
+    parameters:
+     dockerUserName: $(Docker.UserName)
+     dockerRepositoryName: $(Docker.RepositoryName)
+     dockerImageName: $(Docker.ImageName)
+     dockerFile: Dockerfile.Linux
+     dockerContents: '$(System.ArtifactsDirectory)/drop/files/MyAspNetCoreApp' # artifacts from AspNetCore/azure-pipelines-steps.aspnetcore.yml
+     # TODO: Replace MyAspNetCoreApp with your AppName
+
+- job: DockerOnWindows
+  dependsOn: WebApp
+  pool:
+    vmImage: win1803
+  steps:
+  - template: azure-pipelines-steps.docker-from-files-template.yml  # Template reference
+    parameters:
+     dockerUserName: $(Docker.UserName)
+     dockerRepositoryName: $(Docker.RepositoryName)
+     dockerImageName: $(Docker.ImageName)
+     dockerFile: Dockerfile.windowsservercore-1803
+     dockerContents: '$(System.ArtifactsDirectory)/drop/files/MyAspNetCoreApp' # artifacts from AspNetCore/azure-pipelines-steps.aspnetcore.yml
+     # TODO: Replace MyAspNetCoreApp with your AppName

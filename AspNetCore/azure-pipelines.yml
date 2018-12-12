@@ -1,0 +1,21 @@
+resources:
+- repo: self
+
+trigger:
+  batch: false # batch changes if true, start a new build for every push if false
+  branches:
+    include:
+    - master
+
+jobs:
+- job: WebApp
+  pool:
+    vmImage: vs2017-win2016
+  steps:
+  - template: azure-pipelines-steps.aspnetcore.yml
+    parameters:
+     gitVersionVersion: '4.0.0-beta0012' # release version is not available on NuGet yet
+     nugetVersion: '4.9.1'
+     buildConfiguration: 'Release'
+     deployPackage: true
+     deployFiles: true

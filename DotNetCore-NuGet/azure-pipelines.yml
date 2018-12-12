@@ -1,0 +1,20 @@
+resources:
+- repo: self
+
+trigger:
+  branches:
+    include:
+    - master
+
+jobs:
+- job: NuGet
+  pool:
+    vmImage: vs2017-win2016
+  steps:
+  - template: azure-pipelines-steps.dotnet-nuget.yml
+    parameters:
+      gitVersionVersion: '4.0.0-beta0012' # release version is not available on NuGet yet
+      nugetVersion: '4.9.1'
+      buildConfiguration: 'Release'
+      packagesToPack: src\**\*.csproj
+      # Publishes all created NuGet packages to your artifacts

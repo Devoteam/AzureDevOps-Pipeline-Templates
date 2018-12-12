@@ -1,0 +1,55 @@
+# Steps of building Docker from artifacts
+# Uses the flat file output of an ASP.NET Core build and creates a docker image
+parameters:
+  dockerUserName: ''
+  dockerRepositoryName: ''
+  dockerImageName: ''
+  dockerFile: ''
+  dockerContents: ''
+
+steps:
+- powershell:   |
+    Write-Host "Build ID: $(Build.BuildId)"
+    Write-Host "Build BuildNumber: $(Build.BuildNumber)"
+  displayName: "Build Info"
+
+- task: DownloadBuildArtifacts@0
+  displayName: "Download artifacts"
+  inputs:
+    artifactName: drop
+
+- task: CopyFiles@2
+  displayName: "Copy files from artifacts"
+  inputs:
+    SourceFolder: ${{ parameters.dockerContents }}
+    TargetFolder: '_artifacts/dockercontents'
+
+- task: Docker@0
+  displayName: "Docker Info"
+  inputs:
+    containerregistrytype: 'Container Registry'
+    action: 'Run a Docker command'
+    customCommand: info
+
+- task: Docker@0
+  displayName: "Docker Image Build"
+  inputs:
+    containerregistrytype: 'Container Registry'
+    dockerFile: ${{ parameters.dockerFile }}
+    imageName: ${{ parameters.dockerRepositoryName }}/${{ parameters.dockerUserName }}/${{ parameters.dockerImageName }}:$(Build.BuildId)
+
+- powershell: New-Item -Path "$(Build.ArtifactStagingDirectory)/docker" -ItemType Directory -Force | out-null
+  displayName: "Create Docker Image Save Folder"
+
+- task: Docker@0
+  displayName: "Docker Image Save locally"
+  inputs:
+    action: 'Run a Docker command'
+    customCommand: save --output $(Build.ArtifactStagingDirectory)/docker/${{ parameters.dockerRepositoryName }}-${{ parameters.dockerUserName }}-${{ parameters.dockerImageName }}-$(Build.BuildId).tar.gz ${{ parameters.dockerRepositoryName }}/${{ parameters.dockerUserName }}/${{ parameters.dockerImageName }}:$(Build.BuildId)
+
+- task: PublishBuildArtifacts@1
+  displayName: "Publish Docker Image artifacts"
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/docker'
+    ArtifactName: drop
+    publishLocation: Container
