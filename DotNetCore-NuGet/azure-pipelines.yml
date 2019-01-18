@@ -11,10 +11,10 @@ jobs:
   pool:
     vmImage: vs2017-win2016
   steps:
-  - template: azure-pipelines-steps.dotnet-nuget.yml
+  - template: templates/azure-pipelines-steps.dotnet-nuget.yml
     parameters:
-      gitVersionVersion: '4.0.0-beta0012' # release version is not available on NuGet yet
-      nugetVersion: '4.9.1'
+      gitVersionVersion: '4.0.0-beta0012' # release latest version here https://www.nuget.org/packages/GitVersion
+      nugetVersion: '4.9.2' # see recommended version here https://www.nuget.org/downloads
       buildConfiguration: 'Release'
       packagesToPack: src\**\*.csproj
       # Publishes all created NuGet packages to your artifacts

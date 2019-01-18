@@ -17,10 +17,10 @@ jobs:
   pool:
     vmImage: vs2017-win2016
   steps:
-  - template: azure-pipelines-steps.aspnetcore.yml  # see AspNetCore/azure-pipelines-steps.aspnetcore.yml
+  - template: templates/azure-pipelines-steps.aspnetcore.yml  # see AspNetCore/azure-pipelines-steps.aspnetcore.yml
     parameters:
-     gitVersionVersion: '4.0.0-beta0012' # release version is not available on NuGet yet
-     nugetVersion: '4.9.1'
+     gitVersionVersion: '4.0.0-beta0012' # release latest version here https://www.nuget.org/packages/GitVersion
+     nugetVersion: '4.9.2' # see recommended version here https://www.nuget.org/downloads
      buildConfiguration: 'Release'
      deployPackage: false
      deployFiles: true # files only here
@@ -30,7 +30,7 @@ jobs:
   pool:
     vmImage: ubuntu-16.04
   steps:
-  - template: azure-pipelines-steps.docker-from-files-template.yml 
+  - template: templates/azure-pipelines-steps.docker-from-files-template.yml 
     parameters:
      dockerUserName: $(Docker.UserName)
      dockerRepositoryName: $(Docker.RepositoryName)
@@ -44,7 +44,7 @@ jobs:
   pool:
     vmImage: win1803
   steps:
-  - template: azure-pipelines-steps.docker-from-files-template.yml  # Template reference
+  - template: templates/azure-pipelines-steps.docker-from-files-template.yml  # Template reference
     parameters:
      dockerUserName: $(Docker.UserName)
      dockerRepositoryName: $(Docker.RepositoryName)
