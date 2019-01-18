@@ -64,4 +64,3 @@ steps:
   inputs:
     PathtoPublish: $(Build.ArtifactStagingDirectory)
     ArtifactName: drop
-    ArtifactType: Container
