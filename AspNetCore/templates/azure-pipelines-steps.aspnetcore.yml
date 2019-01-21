@@ -70,4 +70,3 @@ steps:
   inputs:
     PathtoPublish: '$(Build.ArtifactStagingDirectory)/app'
     ArtifactName: drop
-    publishLocation: Container
