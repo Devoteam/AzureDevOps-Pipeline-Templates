@@ -16,7 +16,7 @@ EXPOSE 80
 
 FROM microsoft/dotnet:2.2-sdk AS build # TODO: update this to your specific ASP.NET Core version
 WORKDIR /app
-COPY _artifacts/dockerfiles .
+COPY _artifacts/dockercontents .
 
 FROM build AS publish
 
@@ -41,7 +41,7 @@ ENTRYPOINT ["dotnet", "MyAspNetCoreApp.dll"]
 
 FROM microsoft/dotnet-framework:4.7.2-runtime-windowsservercore-1803 # TODO: update this to your specific .NET Framework / Windows version
 WORKDIR /app
-COPY _artifacts/dockerfiles .
+COPY _artifacts/dockercontents .
 
 # Configure web servers to bind to port 80 when present
 ENV ASPNETCORE_URLS=http://+:80 `
