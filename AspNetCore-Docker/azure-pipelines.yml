@@ -37,6 +37,7 @@ jobs:
      dockerImageName: $(Docker.ImageName)
      dockerFile: Dockerfile.Linux
      dockerContents: '$(System.ArtifactsDirectory)/drop/files/MyAspNetCoreApp' # artifacts from AspNetCore/azure-pipelines-steps.aspnetcore.yml
+     artifactsTargetFolder: $(System.DefaultWorkingDirectory)/_artifacts/dockercontents
      # TODO: Replace MyAspNetCoreApp with your AppName
 
 - job: DockerOnWindows
@@ -51,4 +52,5 @@ jobs:
      dockerImageName: $(Docker.ImageName)
      dockerFile: Dockerfile.windowsservercore-1803
      dockerContents: '$(System.ArtifactsDirectory)/drop/files/MyAspNetCoreApp' # artifacts from AspNetCore/azure-pipelines-steps.aspnetcore.yml
+     artifactsTargetFolder: $(System.DefaultWorkingDirectory)/_artifacts/dockercontents
      # TODO: Replace MyAspNetCoreApp with your AppName
