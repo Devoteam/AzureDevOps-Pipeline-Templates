@@ -1,17 +1,15 @@
 # Steps of building Docker from artifacts
 # Uses the flat file output of an ASP.NET Core build and creates a docker image
 parameters:
+  artifactsTargetFolder: '_artifacts/dockercontents'
   dockerUserName: ''
   dockerRepositoryName: ''
   dockerImageName: ''
   dockerFile: ''
+  dockerFileFolder: $(System.DefaultWorkingDirectory)
   dockerContents: ''
 
 steps:
-- powershell:   |
-    Write-Host "Build ID: $(Build.BuildId)"
-    Write-Host "Build BuildNumber: $(Build.BuildNumber)"
-  displayName: "Build Info"
 
 - task: DownloadBuildArtifacts@0
   displayName: "Download artifacts"
@@ -22,30 +20,22 @@ steps:
   displayName: "Copy files from artifacts"
   inputs:
     SourceFolder: ${{ parameters.dockerContents }}
-    TargetFolder: '_artifacts/dockercontents'
+    TargetFolder: ${{ parameters.artifactsTargetFolder }}
 
-- task: Docker@0
-  displayName: "Docker Info"
-  inputs:
-    containerregistrytype: 'Container Registry'
-    action: 'Run a Docker command'
-    customCommand: info
+- script: |
+    docker info
+  displayName: Docker Info
 
-- task: Docker@0
-  displayName: "Docker Image Build"
-  inputs:
-    containerregistrytype: 'Container Registry'
-    dockerFile: ${{ parameters.dockerFile }}
-    imageName: ${{ parameters.dockerRepositoryName }}/${{ parameters.dockerUserName }}/${{ parameters.dockerImageName }}:$(Build.BuildId)
+- script: |
+    docker build -t ${{ parameters.dockerRepositoryName }}/${{ parameters.dockerUserName }}/${{ parameters.dockerImageName }}:$(Build.BuildId) -f ${{ parameters.dockerFile }} ${{ parameters.dockerFileFolder }}
+  displayName: Docker Image Build
 
 - powershell: New-Item -Path "$(Build.ArtifactStagingDirectory)/dockeroutput/docker" -ItemType Directory -Force | out-null
   displayName: "Create Docker Image Save Folder"
 
-- task: Docker@0
-  displayName: "Docker Image Save locally"
-  inputs:
-    action: 'Run a Docker command'
-    customCommand: save --output $(Build.ArtifactStagingDirectory)/dockeroutput/docker/${{ parameters.dockerRepositoryName }}-${{ parameters.dockerUserName }}-${{ parameters.dockerImageName }}-$(Build.BuildId).tar.gz ${{ parameters.dockerRepositoryName }}/${{ parameters.dockerUserName }}/${{ parameters.dockerImageName }}:$(Build.BuildId)
+- script: |
+    docker save --output $(Build.ArtifactStagingDirectory)/dockeroutput/docker/${{ parameters.dockerRepositoryName }}-${{ parameters.dockerUserName }}-${{ parameters.dockerImageName }}-$(Build.BuildId).tar.gz ${{ parameters.dockerRepositoryName }}/${{ parameters.dockerUserName }}/${{ parameters.dockerImageName }}:$(Build.BuildId)
+  displayName: Docker Image Save Locally
 
 - task: PublishBuildArtifacts@1
   displayName: "Publish Docker Image artifacts"
