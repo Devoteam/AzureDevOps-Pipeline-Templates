@@ -8,9 +8,9 @@ trigger:
     - master
 
 variables:
-  Docker.UserName: mydockerusername # TODO: Replace with your Docker Username
-  Docker.ImageName: mydockerimagename # TODO: Replace with your Docker ImageName
-  Docker.RepositoryName: mydockerepositoryname # TODO: Replace with your Docker RepositoryName
+  Docker.Registry: mydockerregistry # TODO: Replace with your Docker Username
+  Docker.Repository: mydockerrepository # TODO: Replace with your Docker ImageName
+  Docker.ImageName: mydockerimagename # TODO: Replace with your Docker RepositoryName
 
 jobs:
 - job: WebApp
@@ -24,20 +24,24 @@ jobs:
      buildConfiguration: 'Release'
      deployPackage: false
      deployFiles: true # files only here
+     outputDirectory: $(Build.ArtifactStagingDirectory)/app
 
 - job: DockerOnLinux
   dependsOn: WebApp
   pool:
     vmImage: ubuntu-16.04
   steps:
-  - template: templates/azure-pipelines-steps.docker-from-files-template.yml 
+  - template: templates/azure-pipelines-steps.docker-azurecr-from-files-template.yml  # Template reference
     parameters:
-     dockerUserName: $(Docker.UserName)
-     dockerRepositoryName: $(Docker.RepositoryName)
+     dockerRegistry: $(Docker.Registry)
+     dockerRepository: $(Docker.Repository)
      dockerImageName: $(Docker.ImageName)
-     dockerFile: Dockerfile.Linux
+     dockerImageTag: $(Build.BuildNumber)
+     dockerFile: src/MyApp/Dockerfile.Linux
      dockerContents: '$(System.ArtifactsDirectory)/drop/files/MyAspNetCoreApp' # artifacts from AspNetCore/azure-pipelines-steps.aspnetcore.yml
      artifactsTargetFolder: $(System.DefaultWorkingDirectory)/_artifacts/dockercontents
+     dockerAzureSubscriptionName: 'Your Subscription Name'
+     dockerAzureCRSubscription: 'YourAzureContainerRegistrySubscription'
      # TODO: Replace MyAspNetCoreApp with your AppName
 
 - job: DockerOnWindows
@@ -45,12 +49,15 @@ jobs:
   pool:
     vmImage: win1803
   steps:
-  - template: templates/azure-pipelines-steps.docker-from-files-template.yml  # Template reference
+  - template: templates/azure-pipelines-steps.docker-azurecr-from-files-template.yml  # Template reference
     parameters:
-     dockerUserName: $(Docker.UserName)
-     dockerRepositoryName: $(Docker.RepositoryName)
+     dockerRegistry: $(Docker.Registry)
+     dockerRepository: $(Docker.Repository)
      dockerImageName: $(Docker.ImageName)
-     dockerFile: Dockerfile.windowsservercore-1803
+     dockerImageTag: $(Build.BuildNumber)
+     dockerFile: src/MyApp/Dockerfile.windowsservercore-1803
      dockerContents: '$(System.ArtifactsDirectory)/drop/files/MyAspNetCoreApp' # artifacts from AspNetCore/azure-pipelines-steps.aspnetcore.yml
      artifactsTargetFolder: $(System.DefaultWorkingDirectory)/_artifacts/dockercontents
+     dockerAzureSubscriptionName: 'Your Subscription Name'
+     dockerAzureCRSubscription: 'YourAzureContainerRegistrySubscription'
      # TODO: Replace MyAspNetCoreApp with your AppName
