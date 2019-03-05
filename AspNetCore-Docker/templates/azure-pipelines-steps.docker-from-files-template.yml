@@ -2,13 +2,16 @@
 # Uses the flat file output of an ASP.NET Core build and creates a docker image
 parameters:
   artifactsTargetFolder: '_artifacts/dockercontents'
-  dockerUserName: ''
-  dockerRepositoryName: ''
+  dockerRegistry: ''
+  dockerRepository: ''
   dockerImageName: ''
-  dockerFile: ''
+  dockerImageTag: $(Build.BuildId)
+  dockerFile: 'Dockerfile'
   dockerFileFolder: $(System.DefaultWorkingDirectory)
   dockerContents: ''
-
+  dockerAzureSubscriptionName: ''
+  dockerAzureCRSubscription: ''
+  
 steps:
 
 - task: DownloadBuildArtifacts@0
@@ -27,18 +30,13 @@ steps:
   displayName: Docker Info
 
 - script: |
-    docker build -t ${{ parameters.dockerRepositoryName }}/${{ parameters.dockerUserName }}/${{ parameters.dockerImageName }}:$(Build.BuildId) -f ${{ parameters.dockerFile }} ${{ parameters.dockerFileFolder }}
+    docker build -t ${{ parameters.dockerRegistry }}/${{ parameters.dockerRepository }}/${{ parameters.dockerImageName }}:${{ parameters.dockerImageTag }} -f ${{ parameters.dockerFile }} ${{ parameters.dockerFileFolder }}
   displayName: Docker Image Build
 
-- powershell: New-Item -Path "$(Build.ArtifactStagingDirectory)/dockeroutput/docker" -ItemType Directory -Force | out-null
-  displayName: "Create Docker Image Save Folder"
-
-- script: |
-    docker save --output $(Build.ArtifactStagingDirectory)/dockeroutput/docker/${{ parameters.dockerRepositoryName }}-${{ parameters.dockerUserName }}-${{ parameters.dockerImageName }}-$(Build.BuildId).tar.gz ${{ parameters.dockerRepositoryName }}/${{ parameters.dockerUserName }}/${{ parameters.dockerImageName }}:$(Build.BuildId)
-  displayName: Docker Image Save Locally
-
-- task: PublishBuildArtifacts@1
-  displayName: "Publish Docker Image artifacts"
+- task: Docker@0
+  displayName: Docker Push Image to Registry
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/dockeroutput'
-    ArtifactName: drop
+    azureSubscription: ${{ parameters.dockerAzureSubscriptionName }}
+    azureContainerRegistry: ${{ parameters.dockerAzureCRSubscription }}
+    action: 'Push an image'
+    imageName: ${{ parameters.dockerRegistry }}/${{ parameters.dockerRepository }}/${{ parameters.dockerImageName }}:${{ parameters.dockerImageTag }}
