@@ -5,6 +5,8 @@ parameters:
   buildConfiguration: ''
   deployPackage: true
   deployFiles: true
+  outputDirectory: $(Build.ArtifactStagingDirectory)
+  
 steps:
 ## Build Versioning
 
@@ -55,18 +57,19 @@ steps:
   condition: ${{ parameters.deployPackage }}
   inputs:
     command: publish
-    arguments: --configuration ${{ parameters.buildConfiguration }} --no-restore --output $(Build.ArtifactStagingDirectory)/app/pkg
+    arguments: --configuration ${{ parameters.buildConfiguration }} --no-restore --output ${{ parameters.outputDirectory }}/app/pkg
 
 - task: DotNetCoreCLI@2
   displayName: ".NET publish files"
   condition: ${{ parameters.deployFiles }}
   inputs:
     command: publish
-    arguments: --configuration ${{ parameters.buildConfiguration }} --no-restore --output $(Build.ArtifactStagingDirectory)/app/files
+    arguments: --configuration ${{ parameters.buildConfiguration }} --no-restore --output ${{ parameters.outputDirectory }}/files
     zipAfterPublish: false
 
+## optional:
 - task: PublishBuildArtifacts@1
   displayName: "Publish artifacts"
   inputs:
-    PathtoPublish: '$(Build.ArtifactStagingDirectory)/app'
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
     ArtifactName: drop
