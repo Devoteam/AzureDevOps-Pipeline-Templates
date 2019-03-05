@@ -17,9 +17,9 @@ steps:
   displayName: NuGet Install GitVersion
   inputs:
     command: custom
-    arguments: install GitVersion.CommandLine -Version ${{ parameters.gitVersionVersion }} -OutputDirectory $(Build.BinariesDirectory)
+    arguments: install GitVersion.CommandLine.DotNetCore -Version ${{ parameters.gitVersionVersion }} -OutputDirectory $(Build.BinariesDirectory)
 
-- powershell: $(Build.BinariesDirectory)\GitVersion.CommandLine.${{ parameters.gitVersionVersion }}\tools\GitVersion.exe $(Build.SourcesDirectory) /output buildserver /nofetch
+- powershell: dotnet $(Build.BinariesDirectory)\GitVersion.CommandLine.DotNetCore.${{ parameters.gitVersionVersion }}\tools\GitVersion.dll $(Build.SourcesDirectory) /output buildserver /nofetch
   displayName: GitVersion Execute
 
 - powershell:   |
