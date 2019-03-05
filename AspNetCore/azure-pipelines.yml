@@ -19,3 +19,4 @@ jobs:
      buildConfiguration: 'Release'
      deployPackage: true
      deployFiles: true
+     outputDirectory: $(Build.ArtifactStagingDirectory)
