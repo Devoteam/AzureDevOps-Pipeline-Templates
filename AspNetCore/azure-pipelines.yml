@@ -1,11 +1,13 @@
-resources:
-- repo: self
-
 trigger:
-  batch: false # batch changes if true, start a new build for every push if false
   branches:
     include:
     - master
+
+pr:
+  branches:
+    include:
+    - master
+    - feature/*
 
 jobs:
 - job: WebApp
