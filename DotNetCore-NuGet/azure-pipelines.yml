@@ -12,7 +12,7 @@ pr:
 jobs:
 - job: NuGet
   pool:
-    vmImage: vs2017-win2016
+    vmImage: vs2017-win2016 # https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops
   steps:
   - template: templates/azure-pipelines-steps.dotnet-nuget.yml
     parameters:
