@@ -48,7 +48,7 @@ steps:
   displayName: ".NET test"
   inputs:
     command: test
-    projects: 'test/**/*.csproj'
+    projects: 'tests/**/*.csproj'
 
 - task: DotNetCoreCLI@2
   displayName: ".NET pack"
