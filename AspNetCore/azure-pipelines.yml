@@ -16,6 +16,8 @@ jobs:
   steps:
   - template: templates/azure-pipelines-steps.aspnetcore.yml
     parameters:
+     toolPath: '$(Build.BinariesDirectory)'
+     dotnetInstallConfigFile: 'NuGet-PublicOnly.config' # workaround for a bug in dotnet cli https://github.com/dotnet/cli/issues/9586#issuecomment-484585146
      gitVersionVersion: '5.0.0-beta2-18' # release latest version here https://www.nuget.org/packages/GitVersion.CommandLine.DotNetCore
      nugetVersion: '4.9.4' # see recommended version here https://www.nuget.org/downloads
      buildConfiguration: 'Release'
