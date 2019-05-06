@@ -1,7 +1,9 @@
 # Steps of building ASP.NET Core as artifacts output
 parameters:
+  toolPath: ''
   gitVersionVersion: ''
   nugetVersion: ''
+  dotnetInstallConfigFile: ''
   buildConfiguration: ''
   deployPackage: true
   deployFiles: true
@@ -15,21 +17,19 @@ steps:
   inputs:
     versionSpec: ${{ parameters.nugetVersion }}
 
-- task: NuGetCommand@2
-  displayName: NuGet Install GitVersion
-  inputs:
-    command: custom
-    arguments: install GitVersion.CommandLine.DotNetCore -Version ${{ parameters.gitVersionVersion }} -OutputDirectory $(Build.BinariesDirectory)
+- script: dotnet tool install GitVersion.Tool --version ${{ parameters.gitVersionVersion }} --tool-path ${{ parameters.toolPath }}/gitversion --configfile ${{ parameters.dotnetInstallConfigFile }}
+  displayName: GitVersion - Install
 
-- powershell: dotnet $(Build.BinariesDirectory)\GitVersion.CommandLine.DotNetCore.${{ parameters.gitVersionVersion }}\tools\GitVersion.dll $(Build.SourcesDirectory) /output buildserver /nofetch
-  displayName: GitVersion Execute
+- script: ${{ parameters.toolPath}}/gitversion/dotnet-gitversion $(Build.SourcesDirectory) /output buildserver /nofetch
+  displayName: GitVersion - Execute
 
 - powershell:   |
     $CI_Version = "$env:GITVERSION_LEGACYSEMVER"
     Write-Host ("##vso[task.setvariable variable=CI_Version;]$CI_Version")
     Write-Host "Build ID: $(Build.BuildId)"
     Write-Host "Build BuildNumber: $(Build.BuildNumber)"
-  displayName: "Build Versions"
+  displayName: "GitVersion - Info"
+
 
 ## Build Versioning
 
