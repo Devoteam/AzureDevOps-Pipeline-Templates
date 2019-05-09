@@ -1,6 +1,8 @@
 parameters:
+  toolPath: ''
   gitVersionVersion: ''
   nugetVersion: ''
+  dotnetInstallConfigFile: ''
 
 steps:
 - task: NuGetToolInstaller@0
@@ -8,18 +10,15 @@ steps:
   inputs:
     versionSpec: ${{ parameters.nugetVersion }}
 
-- task: NuGetCommand@2
-  displayName: NuGet Install GitVersion
-  inputs:
-    command: custom
-    arguments: install GitVersion.CommandLine.DotNetCore -Version ${{ parameters.gitVersionVersion }} -OutputDirectory $(Build.BinariesDirectory)
+- powershell: dotnet tool update  GitVersion.Tool --version ${{ parameters.gitVersionVersion }} --tool-path ${{ parameters.toolPath }}/gitversion --configfile ${{ parameters.dotnetInstallConfigFile }}
+  displayName: GitVersion - Install/Update
 
-- powershell: dotnet $(Build.BinariesDirectory)\GitVersion.CommandLine.DotNetCore.${{ parameters.gitVersionVersion }}\tools\GitVersion.dll $(Build.SourcesDirectory) /output buildserver /nofetch
-  displayName: GitVersion Execute
+- script: ${{ parameters.toolPath}}/gitversion/dotnet-gitversion $(Build.SourcesDirectory) /output buildserver /nofetch
+  displayName: GitVersion - Execute
 
 - powershell:   |
     $CI_Version = "$env:GITVERSION_LEGACYSEMVER"
     Write-Host ("##vso[task.setvariable variable=CI_Version;]$CI_Version")
     Write-Host "Build ID: $(Build.BuildId)"
     Write-Host "Build BuildNumber: $(Build.BuildNumber)"
-  displayName: "Build Versions"
+  displayName: "GitVersion - Info"
