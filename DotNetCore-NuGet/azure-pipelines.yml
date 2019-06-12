@@ -12,12 +12,12 @@ pr:
 jobs:
 - job: NuGet
   pool:
-    vmImage: vs2017-win2016 # https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops
+    vmImage: windows-2019 # https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops
   steps:
   - template: templates/azure-pipelines-steps.dotnet-nuget.yml
     parameters:
-      gitVersionVersion: '5.0.0-beta2-18' # release latest version here https://www.nuget.org/packages/GitVersion.CommandLine.DotNetCore
-      nugetVersion: '4.9.4' # see recommended version here https://www.nuget.org/downloads
+      gitVersionVersion: '5.0.0-beta3-33' # release latest version here https://www.nuget.org/packages/GitVersion.CommandLine.DotNetCore
+      nugetVersion: '5.0.2' # see recommended version here https://www.nuget.org/downloads
       buildConfiguration: 'Release'
       packagesToPack: src\**\*.csproj
       # Publishes all created NuGet packages to your artifacts
