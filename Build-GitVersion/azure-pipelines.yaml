@@ -16,5 +16,5 @@ jobs:
     parameters:
       toolPath: '$(Build.BinariesDirectory)'
       dotnetInstallConfigFile: 'NuGet-PublicOnly.config' # workaround for a bug in dotnet cli https://github.com/dotnet/cli/issues/9586#issuecomment-484585146
-      gitVersionVersion: '5.0.0-beta2-75' # release latest version here https://www.nuget.org/packages/GitVersion.CommandLine.DotNetCore
-      nugetVersion: '5.0.0' # see recommended version here https://www.nuget.org/downloads
+      gitVersionVersion: '5.0.0-beta5.9' # release latest version here https://www.nuget.org/packages/GitVersion.CommandLine.DotNetCore
+      nugetVersion: '5.0.2' # see recommended version here https://www.nuget.org/downloads

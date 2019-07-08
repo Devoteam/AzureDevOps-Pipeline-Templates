@@ -10,14 +10,14 @@ pr:
     - feature/*
 
 jobs:
-- job: NuGet
-  pool:
-    vmImage: windows-2019 # https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops
+- job: WebApp
   steps:
-  - template: build/azure-pipelines-steps.dotnet-nuget.yml
+  - template: build/azure-pipelines-steps.init.yml
     parameters:
+      toolPath: '$(Build.BinariesDirectory)'
+      dotnetInstallConfigFile: 'NuGet.config' # workaround for a bug in dotnet cli https://github.com/dotnet/cli/issues/9586#issuecomment-484585146
       gitVersionVersion: '5.0.0-beta5.9' # release latest version here https://www.nuget.org/packages/GitVersion.CommandLine.DotNetCore
       nugetVersion: '5.0.2' # see recommended version here https://www.nuget.org/downloads
-      buildConfiguration: 'Release'
-      packagesToPack: src\**\*.csproj
-      # Publishes all created NuGet packages to your artifacts
+  - template: build/azure-pipelines-steps.angular.yml
+    parameters:
+      path: src

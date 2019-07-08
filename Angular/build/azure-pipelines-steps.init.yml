@@ -1,0 +1,26 @@
+parameters:
+  toolPath: ''
+  gitVersionVersion: ''
+  nugetVersion: ''
+  dotnetInstallConfigFile: ''
+  
+steps:
+## Build Versioning
+
+- task: NuGetToolInstaller@0
+  displayName: NuGet use ${{ parameters.nugetVersion }}
+  inputs:
+    versionSpec: ${{ parameters.nugetVersion }}
+
+- script: dotnet tool update GitVersion.Tool --version ${{ parameters.gitVersionVersion }} --tool-path ${{ parameters.toolPath }}/gitversion --configfile ${{ parameters.dotnetInstallConfigFile }}
+  displayName: GitVersion - Install/Update
+
+- script: ${{ parameters.toolPath}}/gitversion/dotnet-gitversion $(Build.SourcesDirectory) /output buildserver /nofetch
+  displayName: GitVersion - Execute
+
+- powershell:   |
+    $CI_Version = "$env:GITVERSION_LEGACYSEMVER"
+    Write-Host ("##vso[task.setvariable variable=CI_Version;]$CI_Version")
+    Write-Host "Build ID: $(Build.BuildId)"
+    Write-Host "Build BuildNumber: $(Build.BuildNumber)"
+  displayName: "GitVersion - Info"

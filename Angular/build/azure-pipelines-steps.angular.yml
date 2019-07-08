@@ -1,0 +1,45 @@
+parameters:
+  path: ''
+  
+steps:
+  - task: Npm@1
+    displayName: NPM install Packages
+    inputs:
+      command: custom
+      workingDir: ${{ parameters.path }}
+      verbose: false
+      customCommand: 'install --save'
+
+  - task: Npm@1
+    displayName: NPM fix node-sass
+    inputs:
+      command: custom
+      workingDir: ${{ parameters.path }}
+      verbose: false
+      customCommand: 'rebuild node-sass'
+
+   ## uninstall webpack and install angular-devkit is a workaround to fix an sass-build error
+
+  - task: Npm@1
+    displayName: NPM uninstall webpack
+    inputs:
+      command: custom
+      workingDir: ${{ parameters.path }}
+      verbose: false
+      customCommand: 'uninstall webpack --save-dev'
+
+  - task: Npm@1
+    displayName: NPM install latest angular-devkit
+    inputs:
+      command: custom
+      workingDir: ${{ parameters.path }}
+      verbose: false
+      customCommand: 'install @angular-devkit/build-angular@0.13.8 --save-dev'
+
+  - task: Npm@1
+    displayName: NPM build
+    inputs:
+      command: custom
+      workingDir: ${{ parameters.path }}
+      verbose: false
+      customCommand: 'run build:prod'
