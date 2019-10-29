@@ -13,6 +13,11 @@ variables:
   Docker.Registry: mydockerregistry # TODO: Replace with your Docker Username
   Docker.Repository: mydockerrepository # TODO: Replace with your Docker ImageName
   Docker.ImageName: mydockerimagename # TODO: Replace with your Docker RepositoryName
+  SourcePath: 'src'
+  BuildConfig: 'Release'
+  NuGetConfigPath: 'NuGet.config' # workaround for a bug in dotnet cli https://github.com/dotnet/cli/issues/9586#issuecomment-484585146
+  GitVersionVersion: '5.1.1' # release latest version here https://www.nuget.org/packages/GitVersion.Tool
+  NuGetVersion: '5.3.1' # see recommended version here https://www.nuget.org/downloads
 
 jobs:
 - job: WebApp
@@ -21,9 +26,9 @@ jobs:
   steps:
   - template: build/azure-pipelines-steps.aspnetcore.yml  # see AspNetCore/azure-pipelines-steps.aspnetcore.yml
     parameters:
-     gitVersionVersion: '5.0.0-beta5.9' # release latest version here https://www.nuget.org/packages/GitVersion.CommandLine.DotNetCore
-     nugetVersion: '5.0.2' # see recommended version here https://www.nuget.org/downloads
-     buildConfiguration: 'Release'
+     gitVersionVersion: $(Build.GitVersionVersion)
+     nugetVersion: $(Build.NuGetVersion)
+     buildConfiguration: $(Build.BuildConfig)
      deployPackage: false
      deployFiles: true # files only here
      outputDirectory: $(Build.ArtifactStagingDirectory)/app

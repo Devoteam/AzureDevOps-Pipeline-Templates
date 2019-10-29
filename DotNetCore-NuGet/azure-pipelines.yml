@@ -9,6 +9,12 @@ pr:
     - master
     - feature/*
 
+variables:
+  PackagesToPack: 'src\**\*.csproj'
+  BuildConfig: 'Release'
+  GitVersionVersion: '5.1.1' # release latest version here https://www.nuget.org/packages/GitVersion.Tool
+  NuGetVersion: '5.3.1' # see recommended version here https://www.nuget.org/downloads
+
 jobs:
 - job: NuGet
   pool:
@@ -16,8 +22,8 @@ jobs:
   steps:
   - template: build/azure-pipelines-steps.dotnet-nuget.yml
     parameters:
-      gitVersionVersion: '5.0.0-beta5.9' # release latest version here https://www.nuget.org/packages/GitVersion.CommandLine.DotNetCore
-      nugetVersion: '5.0.2' # see recommended version here https://www.nuget.org/downloads
-      buildConfiguration: 'Release'
-      packagesToPack: src\**\*.csproj
+      gitVersionVersion: $(Build.GitVersionVersion)
+      nugetVersion: $(Build.NuGetVersion)
+      buildConfiguration: $(Build.BuildConfig)
+      packagesToPack: $(Build.PackagesToPack)
       # Publishes all created NuGet packages to your artifacts

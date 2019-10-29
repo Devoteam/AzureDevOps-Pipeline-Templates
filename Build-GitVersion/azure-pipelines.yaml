@@ -9,12 +9,17 @@ pr:
     - master
     - feature/*
 
+variables:
+  NuGetConfigPath: 'NuGet-PublicOnly.config' # workaround for a bug in dotnet cli https://github.com/dotnet/cli/issues/9586#issuecomment-484585146
+  GitVersionVersion: '5.1.1' # release latest version here https://www.nuget.org/packages/GitVersion.Tool
+  NuGetVersion: '5.3.1' # see recommended version here https://www.nuget.org/downloads
+
 jobs:
 - job: WebApp
   steps:
   - template: build/azure-pipelines-steps.init.yml
     parameters:
-      toolPath: '$(Build.BinariesDirectory)'
-      dotnetInstallConfigFile: 'NuGet-PublicOnly.config' # workaround for a bug in dotnet cli https://github.com/dotnet/cli/issues/9586#issuecomment-484585146
-      gitVersionVersion: '5.0.0-beta5.9' # release latest version here https://www.nuget.org/packages/GitVersion.CommandLine.DotNetCore
-      nugetVersion: '5.0.2' # see recommended version here https://www.nuget.org/downloads
+      toolPath: $(Build.BinariesDirectory)
+      dotnetInstallConfigFile: $(Build.NuGetConfigPath)
+      gitVersionVersion: $(Build.GitVersionVersion)
+      nugetVersion: $(Build.NuGetVersion)
