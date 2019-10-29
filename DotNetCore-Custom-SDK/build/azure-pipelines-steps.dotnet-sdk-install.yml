@@ -1,0 +1,17 @@
+# Steps of building .NET Core / .NET Standard as NuGet output and raw output
+parameters:
+  includePreviewVersions: 'true'
+  version: ''
+  installationPath: '$(Agent.ToolsDirectory)/dotnet'
+  taskTitle: 'Use .NET Core SDK'
+
+steps:
+## Build Versioning
+
+- task: UseDotNet@2
+  displayName: ${{ parameters.taskTitle }}
+  inputs:
+    packageType: sdk
+    includePreviewVersions: ${{ parameters.includePreviewVersions }}
+    version: ${{ parameters.version }}
+    installationPath: ${{ parameters.installationPath }}

@@ -1,3 +1,3 @@
 # NET Core NuGet YAML
 
-This YAML builds an .NET Core application and creates a NuGet package.
+This YAML adds a custom .NET Core runtime to your agent.

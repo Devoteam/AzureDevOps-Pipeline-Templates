@@ -1,18 +1,21 @@
 # AzureDevOps-YamlBuildSamples
 
-| Target | Artifact Type | File |
+| Target | Output | File |
 |-|-|-|
+| Angular | Deployment Package | [Link](Angular/readme.md) |
 | ASP.NET Core | File and Deployment Package | [Link](AspNetCore/readme.md) |
 | ASP.NET Core with Docker| Files, Deployment Package and Docker Image | [Link](AspNetCore-Docker/readme.md) |
 | GitVersion | Calculates Version of Build | [Link](Build-GitVersion/readme.md) |
-| Shared Lib | NuGet Package | [Link](DotNetCore-NuGet/readme.md) |
+| .NET Core - Custom SDK | Adds custom .NET Core SDK | [Link](DotNetCore-Custom-SDK/readme.md) |
+| .NET NuGet Package | NuGet Package | [Link](DotNetCore-NuGet/readme.md) |
+| WhiteSource Bolt | Analysis Report | [Link](WhiteSourceBolt/readme.md) |
 
 ## License 
 
 ```
 MIT License
 
-Copyright (c) 2018 Benjamin Abt
+Copyright (c) 2017-2019 Benjamin Abt
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

@@ -1,0 +1,19 @@
+trigger:
+  branches:
+    include:
+    - master
+
+pr:
+  branches:
+    include:
+    - master
+    - feature/*
+
+jobs:
+- job: NuGet
+  pool:
+    vmImage: windows-2019 # https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops
+  steps:
+  - template: build/azure-pipelines-steps.whitesource.yml
+    parameters:
+      sourceDirectory: src

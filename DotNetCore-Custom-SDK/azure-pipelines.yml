@@ -1,0 +1,25 @@
+trigger:
+  branches:
+    include:
+    - master
+
+pr:
+  branches:
+    include:
+    - master
+    - feature/*
+
+jobs:
+- job: NuGet
+  pool:
+    vmImage: windows-2019 # https://docs.microsoft.com/en-us/azure/devops/pipelines/agents/hosted?view=azure-devops
+  steps:
+  - template: build/azure-pipelines-steps.dotnet-sdk-install.yml
+    parameters:
+      includePreviewVersions: true
+      version: '3.0.100'
+      installationPath: '$(Agent.ToolsDirectory)/dotnet'
+      taskTitle: 'Use .NET Core SDK 3.0'
+      # .NET Core 3 SDKs: https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/3.0/releases.json
+      # .NET Core 2.2 SDKs: https://dotnetcli.blob.core.windows.net/dotnet/release-metadata/2.2/releases.json
+      # use "version": "3.0.100"

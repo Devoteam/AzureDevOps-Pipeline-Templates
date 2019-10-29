@@ -1,0 +1,11 @@
+# Steps of building .NET Core / .NET Standard as NuGet output and raw output
+parameters:
+  sourceDirectory: 'src'
+
+steps:
+## Build Versioning
+
+- task: WhiteSource Bolt@19
+  displayName: "Whitesource Analysis"
+  inputs:
+    cwd: ${{ parameters.sourceDirectory }}
